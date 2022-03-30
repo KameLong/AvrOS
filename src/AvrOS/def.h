@@ -32,7 +32,7 @@ typedef double f32;
 #endif
 #include <avr/iom328p.h>
 #include <avr/io.h>
-
+#include <stdarg.h>
 
 
 #define SDA_PORT PORTC

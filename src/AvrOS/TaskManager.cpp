@@ -9,10 +9,21 @@ i16 TaskManager::subTickMAX = -1;
 u8 TaskManager::subTickMod = -1;
 Task* TaskManager::taskList[TASK_MAX];
 Task* TaskManager::stackTask[TASK_STACK_MAX];
+Task TaskManager::taskMemory[TASK_MAX];
 u8 TaskManager::stackTaskSize=0;
 //新しい割り込み処理を行います
 void TaskManager::interrupt(void(*func)(void*),  u8 priority, void* param) {
-    Task* newTask = (Task*)malloc(sizeof(Task));
+    Task* newTask=nullptr;
+    for(u8 i=0;i<TASK_MAX;i++){
+        if(taskMemory[i].priority==0){
+            newTask=&taskMemory[i];
+            break;
+        }
+    }
+    if(newTask== nullptr){
+        //error 新しくTaskを開始出来なかった
+        return;
+    }
     newTask->func = func;
     newTask->param = param;
     newTask->priority = priority;
@@ -51,7 +62,7 @@ void TaskManager::runTask() {
     stackTask[stackTaskSize-1]->func(stackTask[stackTaskSize-1]->param);
     //タスクを終了
     //stackTaskの削除
-    free (stackTask[stackTaskSize-1]);
+    stackTask[stackTaskSize-1]->priority=0;
     stackTask[stackTaskSize-1]= nullptr;
     stackTaskSize--;
     checkTask();

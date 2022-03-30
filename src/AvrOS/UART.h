@@ -72,7 +72,7 @@ public:
      *         -2:別の書き込み実行中
      */
 
-    static u8 writeData(char* data){
+    static u8 writeData(const char* data){
         if((state&0b00000001)!=0){
             //すでに書き込み中
             return -2;

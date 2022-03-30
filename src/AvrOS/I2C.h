@@ -110,10 +110,6 @@ public:
             }
             delayUS(2);
             SCL_H;
-            u8 scl = PORTC&(1 << PORTC5);
-//            while (scl == 0) {
-//                delayUS(1);
-//            }
             delayUS(5);
             SCL_L;
             delayUS(3);
@@ -169,7 +165,6 @@ public:
         delayUS(2);
         SCL_H;
         delayUS(3);
-        u8 sda = SDA_PIN&(1 << SDA_PORT_BIT);
         delayUS(2);
         SCL_L;
         delayUS(3);

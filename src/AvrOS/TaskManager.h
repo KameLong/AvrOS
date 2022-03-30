@@ -63,6 +63,8 @@ public:
     */
     constexpr static u16 INTERVAL = 1000;
 
+    static Task taskMemory[TASK_MAX];
+
     static Task *taskList[TASK_MAX];
     static Task *stackTask[TASK_STACK_MAX];
     static u8 stackTaskSize;
@@ -80,8 +82,6 @@ public:
     static void init(){
         TCCR0A = 0b00000010; //標準動作
         u32 waitClock=F_CPU/10000*INTERVAL;
-
-
         if(waitClock<256){
             TCCR0B=0b00000001;
             OCR0A=waitClock-1;
@@ -122,7 +122,17 @@ public:
 
     //時間差で割り込み処理を行います
     static void setTimeout(void(*func)(void *), TICK delay, u8 priority = 128, void *param = nullptr) {
-        Task* newTask = (Task*)malloc(sizeof(Task));
+        Task* newTask = nullptr;
+        for(u8 i=0;i<TASK_MAX;i++){
+            if(taskMemory[i].priority==0){
+                newTask=&taskMemory[i];
+                break;
+            }
+        }
+        if(newTask== nullptr){
+            //error 新しくTaskを開始出来なかった
+            return;
+        }
         newTask->func = func;
         newTask->param = param;
         newTask->priority = priority;
